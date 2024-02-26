@@ -32,7 +32,9 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+late AnimationController controller = AnimationController(vsync: this);
+bool hide_progess_indicator = false;
   static const platform = MethodChannel('app.channel.shared.data');
   String dataShared = 'No data';
   String dataShared1 = 'No data';
@@ -51,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       setState(() {
         isLoading = true;
+        hide_progess_indicator = true;
       });
       String data_o = dataShared ;
       List<String> urlParts = data_o.split('/');
@@ -85,7 +88,8 @@ class _MyHomePageState extends State<MyHomePage> {
         });
         launchUrl(Uri.parse(dataShared1));
         setState(() {
-          isLoading = true;
+          isLoading = false;
+          hide_progess_indicator = false ;
         });
       } else {
         print('Failed to fetch data. Status code: ${response.statusCode}');
@@ -107,6 +111,13 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+      bottom: hide_progess_indicator ? PreferredSize(
+        preferredSize: Size(double.infinity, 1.0),
+        child: LinearProgressIndicator(
+          value: controller.value,
+          semanticsLabel: 'Linear progress indicator',
+        ),
+      ) : null,
       ),
       body: Center(
         child: Column(
