@@ -46,9 +46,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-
+  bool isLoading = false;
   Future<String> get_lambda(BuildContext context) async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       String data_o = dataShared ;
       List<String> urlParts = data_o.split('/');
 
@@ -81,6 +84,9 @@ class _MyHomePageState extends State<MyHomePage> {
           dataShared1 =videoUrl.replaceAll('\"', '');
         });
         launchUrl(Uri.parse(dataShared1));
+        setState(() {
+          isLoading = true;
+        });
       } else {
         print('Failed to fetch data. Status code: ${response.statusCode}');
       }
@@ -125,10 +131,11 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           get_lambda(context);
         },
-
         tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        child: isLoading
+            ? CircularProgressIndicator()
+            : Icon(Icons.add),
+      ),
     );
   }
 }
